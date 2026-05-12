@@ -5,6 +5,8 @@ const capturedPokemon =
 
 let currentFilter = "all";
 
+let searchText = "";
+
 function showPage(pageId) {
 
   const pages = document.querySelectorAll("section");
