@@ -1,205 +1,64 @@
-const capturedPokemon =
-  JSON.parse(localStorage.getItem("capturedPokemon")) || {};
+import { useEffect, useState } from "react";
+import Header from "./components/Header";
+import ProgressBar from "./components/ProgressBar";
+import PokemonCard from "./components/PokemonCard";
 
-let currentFilter = "all";
-let searchText = "";
+// 🔥 Datos de ejemplo (puedes reemplazar por API después)
+const POKEMONS = [
+  { id: 1, name: "bulbasaur", image: "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/1.png" },
+  { id: 2, name: "ivysaur", image: "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/2.png" },
+  { id: 3, name: "venusaur", image: "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/3.png" },
+  { id: 4, name: "charmander", image: "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/4.png" },
+  { id: 5, name: "charmeleon", image: "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/5.png" },
+  { id: 6, name: "charizard", image: "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/6.png" },
+];
 
-/* -----------------------------
-   NAVEGACIÓN ENTRE PÁGINAS
------------------------------ */
-function showPage(pageId) {
-  const pages = document.querySelectorAll("section");
+export default function App() {
+  const [search, setSearch] = useState("");
+  const [caught, setCaught] = useState([]);
 
-  pages.forEach((page) => {
-    page.style.display = "none";
-  });
+  // 🔥 cargar desde localStorage
+  useEffect(() => {
+    const saved = localStorage.getItem("caught");
+    if (saved) setCaught(JSON.parse(saved));
+  }, []);
 
-  document.getElementById(pageId).style.display = "block";
-}
+  // 💾 guardar progreso
+  useEffect(() => {
+    localStorage.setItem("caught", JSON.stringify(caught));
+  }, [caught]);
 
-/* -----------------------------
-   CARGAR POKÉMON
------------------------------ */
-async function loadPokemon() {
-  const response = await fetch("data/pokemon.json");
-  const pokemonList = await response.json();
+  const toggleCaught = (id) => {
+    setCaught((prev) =>
+      prev.includes(id)
+        ? prev.filter((p) => p !== id)
+        : [...prev, id]
+    );
+  };
 
-  const container = document.getElementById("pokemon-container");
-  container.innerHTML = "";
-
-  pokemonList.forEach((pokemon) => {
-    const card = document.createElement("div");
-    card.classList.add("card");
-    card.dataset.id = pokemon.id;
-
-    card.innerHTML = `
-      <img src="${pokemon.image}" alt="${pokemon.name}">
-
-      <div class="pokemon-id">
-        ${pokemon.id}
-      </div>
-
-      <div class="pokemon-name">
-        ${pokemon.name}
-      </div>
-
-      <button class="capture-button not-captured">
-        No Capturado
-      </button>
-    `;
-
-    const button = card.querySelector("button");
-
-    updateButton(button, pokemon.id);
-
-    button.addEventListener("click", () => {
-      capturedPokemon[pokemon.id] =
-        !capturedPokemon[pokemon.id];
-
-      localStorage.setItem(
-        "capturedPokemon",
-        JSON.stringify(capturedPokemon)
-      );
-
-      updateButton(button, pokemon.id);
-
-      updateMainProgress(pokemonList);
-      updateOverallProgress(pokemonList);
-
-      applyFiltersAndSearch();
-    });
-
-    container.appendChild(card);
-  });
-
-  updateMainProgress(pokemonList);
-  updateOverallProgress(pokemonList);
-}
-
-/* -----------------------------
-   BOTÓN CAPTURA
------------------------------ */
-function updateButton(button, pokemonId) {
-  const captured = capturedPokemon[pokemonId];
-
-  if (captured) {
-    button.textContent = "Capturado";
-    button.classList.remove("not-captured");
-    button.classList.add("captured");
-  } else {
-    button.textContent = "No Capturado";
-    button.classList.remove("captured");
-    button.classList.add("not-captured");
-  }
-}
-
-/* -----------------------------
-   PROGRESO PRINCIPAL
------------------------------ */
-function updateMainProgress(pokemonList) {
-  const capturedCount =
-    Object.values(capturedPokemon).filter(Boolean).length;
-
-  const totalPokemon = pokemonList.length;
-
-  const percentage =
-    (capturedCount / totalPokemon) * 100;
-
-  document.getElementById("main-progress-text")
-    .textContent =
-    `${capturedCount} / ${totalPokemon} Capturados`;
-
-  document.getElementById("main-progress-fill")
-    .style.width =
-    `${percentage}%`;
-}
-
-/* -----------------------------
-   PROGRESO GLOBAL
------------------------------ */
-function updateOverallProgress(pokemonList) {
-  const capturedCount =
-    Object.values(capturedPokemon).filter(Boolean).length;
-
-  const totalPokemon = pokemonList.length;
-
-  const percentage = Math.floor(
-    (capturedCount / totalPokemon) * 100
+  // 🔎 filtro búsqueda
+  const filtered = POKEMONS.filter((p) =>
+    p.name.toLowerCase().includes(search.toLowerCase())
   );
 
-  const degrees = (percentage / 100) * 360;
+  return (
+    <div className="min-h-screen bg-gray-50 pb-10">
+      
+      <Header search={search} setSearch={setSearch} />
 
-  document.getElementById("overall-progress-count")
-    .textContent =
-    `${capturedCount} / ${totalPokemon}`;
+      <ProgressBar caught={caught.length} total={POKEMONS.length} />
 
-  document.getElementById("overall-progress-percent")
-    .textContent =
-    `${percentage}%`;
+      <div className="grid grid-cols-3 gap-3 px-3 mt-4">
+        {filtered.map((p) => (
+          <PokemonCard
+            key={p.id}
+            pokemon={p}
+            caught={caught.includes(p.id)}
+            toggle={toggleCaught}
+          />
+        ))}
+      </div>
 
-  document.getElementById("overall-progress-circle")
-    .style.background =
-    `conic-gradient(#4caf50 ${degrees}deg, #444 ${degrees}deg)`;
+    </div>
+  );
 }
-
-/* -----------------------------
-   FILTRO
------------------------------ */
-function setFilter(filter) {
-  currentFilter = filter;
-  applyFiltersAndSearch();
-}
-
-/* -----------------------------
-   BUSCADOR + FILTROS
------------------------------ */
-function applyFiltersAndSearch() {
-  const cards = document.querySelectorAll(".card");
-
-  cards.forEach((card) => {
-    const name = card
-      .querySelector(".pokemon-name")
-      .textContent.toLowerCase();
-
-    const pokemonId = card.dataset.id;
-    const captured = capturedPokemon[pokemonId];
-
-    const matchesSearch = name.includes(searchText);
-
-    let matchesFilter = false;
-
-    if (currentFilter === "all") {
-      matchesFilter = true;
-    }
-
-    if (currentFilter === "captured" && captured) {
-      matchesFilter = true;
-    }
-
-    if (currentFilter === "not-captured" && !captured) {
-      matchesFilter = true;
-    }
-
-    card.style.display =
-      matchesSearch && matchesFilter
-        ? "block"
-        : "none";
-  });
-}
-
-/* -----------------------------
-   BUSCADOR INPUT
------------------------------ */
-document.addEventListener("DOMContentLoaded", () => {
-  const input = document.getElementById("search-input");
-
-  input.addEventListener("input", (e) => {
-    searchText = e.target.value.toLowerCase();
-    applyFiltersAndSearch();
-  });
-});
-
-/* -----------------------------
-   INICIO
------------------------------ */
-loadPokemon();
