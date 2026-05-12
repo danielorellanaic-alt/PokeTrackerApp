@@ -1,106 +1,12 @@
 <!DOCTYPE html>
 <html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>PokeTracker</title>
+  </head>
 
-<head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>PokeTrackerApp</title>
-  <link rel="stylesheet" href="style.css">
-</head>
-
-<body>
-
-  <!-- NAV -->
-  <nav>
-    <button onclick="showPage('pokemon-page')">Pokédex</button>
-    <button onclick="showPage('collections-page')">Colecciones</button>
-    <button onclick="showPage('progress-page')">Progreso</button>
-  </nav>
-
-  <!-- POKÉDEX -->
-  <section id="pokemon-page">
-
-    <div class="page-header">
-
-      <h1>Pokédex</h1>
-
-      <!-- 🔎 BUSCADOR -->
-      <div class="search-container">
-        <input
-          type="text"
-          id="search-input"
-          placeholder="Buscar Pokémon..."
-        />
-      </div>
-
-      <!-- PROGRESO PRINCIPAL -->
-      <div id="main-progress-container">
-
-        <!-- FILTROS -->
-        <div id="filter-container">
-
-          <button onclick="setFilter('all')">Todos</button>
-          <button onclick="setFilter('captured')">Capturados</button>
-          <button onclick="setFilter('not-captured')">Sin Capturar</button>
-
-        </div>
-
-        <div id="main-progress-text">
-          0 / 0 Capturados
-        </div>
-
-        <div id="main-progress-bar">
-          <div id="main-progress-fill"></div>
-        </div>
-
-      </div>
-
-    </div>
-
-    <!-- LISTA POKÉMON -->
-    <div id="pokemon-container"></div>
-
-  </section>
-
-  <!-- COLECCIONES -->
-  <section id="collections-page">
-
-    <div class="page-header">
-      <h1>Colecciones</h1>
-    </div>
-
-  </section>
-
-  <!-- PROGRESO GLOBAL -->
-  <section id="progress-page">
-
-    <div class="page-header">
-      <h1>Progreso</h1>
-    </div>
-
-    <div id="overall-progress-container">
-
-      <div id="overall-progress-circle">
-
-        <div id="overall-progress-inner">
-
-          <div id="overall-progress-count">
-            0 / 0
-          </div>
-
-          <div id="overall-progress-percent">
-            0%
-          </div>
-
-        </div>
-
-      </div>
-
-    </div>
-
-  </section>
-
-  <script src="app.js"></script>
-
-</body>
+  <body>
+    <div id="root"></div>
+  </body>
 </html>
