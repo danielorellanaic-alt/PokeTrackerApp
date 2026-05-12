@@ -267,3 +267,43 @@ section {
 
   cursor: pointer;
 }
+
+.search-container {
+  width: 100%;
+  display: flex;
+  justify-content: center;
+  margin: 15px 0;
+}
+
+#search-input {
+  width: 90%;
+  max-width: 500px;
+  padding: 14px 16px;
+  border-radius: 12px;
+  border: 1px solid #ccc;
+  font-size: 16px;
+  outline: none;
+}
+
+.page-header {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 12px;
+}
+
+/* separa filtros del progreso */
+#main-progress-container {
+  margin-top: 20px;
+}
+
+/* separa barra de progreso */
+#main-progress-bar {
+  margin-top: 10px;
+}
+
+/* separación general entre bloques */
+#filter-container {
+  margin-top: 10px;
+  margin-bottom: 10px;
+}
