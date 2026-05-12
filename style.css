@@ -126,11 +126,13 @@ section {
 
 #main-progress-text {
 
-  margin-bottom: 10px;
+  margin-bottom: 6px;
 
   text-align: center;
 
   font-size: 14px;
+
+  letter-spacing: -0.5px;
 }
 
 #main-progress-bar {
